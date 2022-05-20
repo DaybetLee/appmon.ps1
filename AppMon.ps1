@@ -1,11 +1,14 @@
 $notpressed = $true
 $string = 'Press any key to stop logging:'
-$dots = 1
 $i = 0
 
+# Change the following as require
+$dots = 3 # Seconds to next interval check
 $targetProcess = "FortiSSLVPNdaemon"
 $targetService = "FA_Scheduler"
 $targetPort = 25427
+$progamPath = "\Aruba Networks\ClearPassOnGuard"
+$appdataPath = "\Aruba Networks\ClearPassOnGuard"
 
 # Create ps_logs folder in Desktop if it is not already there
 if (-not (Test-Path -Path $env:HOMEPATH\Desktop\ps_logs)) {
@@ -23,8 +26,8 @@ function LogNow {
 
         # Capture application logs
         $DateStamp = get-date -uformat "%Y-%m-%d@%H-%M-%S"
-        Copy-Item -Path "$env:ProgramData\Aruba Networks\ClearPassOnGuard" -Destination "$env:HOMEPATH\Desktop\ps_logs\ProgramData-$DateStamp" -Recurse
-        Copy-Item -Path "$env:APPDATA\Aruba Networks\ClearPassOnGuard" -Destination "$env:HOMEPATH\Desktop\ps_logs\APPDATA-$DateStamp" -Recurse
+        Copy-Item -Path "$env:ProgramData$progamPath" -Destination "$env:HOMEPATH\Desktop\ps_logs\ProgramData-$DateStamp" -Recurse
+        Copy-Item -Path "$env:APPDATA$appdataPath" -Destination "$env:HOMEPATH\Desktop\ps_logs\APPDATA-$DateStamp" -Recurse
         "$(Get-Date -format 'u') - Info - Copied %AppData%\Aruba Networks\ClearPassOnGuard and %ProgramData%\Aruba Networks\ClearPassOnGuard logs." | Out-File -FilePath $env:HOMEPATH\Desktop\ps_logs\logging.txt -Append
 
         # Check if local port uses the port
