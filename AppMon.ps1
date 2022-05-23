@@ -4,8 +4,8 @@ $i = 0
 
 # Change the following as require
 $dots = 3 # Seconds to next interval check
-$targetProcess = "FortiSSLVPNdaemon"
-$targetService = "FA_Scheduler"
+$targetProcess = "ClearPassAgentController" # Get-Process to locate target process
+$targetService = "ClearPass Agent Controller" # Get-Service to locate target service
 $targetPort = 25427
 $progamPath = "\Aruba Networks\ClearPassOnGuard"
 $appdataPath = "\Aruba Networks\ClearPassOnGuard"
@@ -33,7 +33,12 @@ function LogNow {
         # Check if local port uses the port
         if (Get-NetTCPConnection -LocalPort $targetPort -ErrorAction SilentlyContinue ) {
             "$(Get-Date -format 'u') - Info - Capturing application that uses local port $targetPort" | Out-File -FilePath $env:HOMEPATH\Desktop\ps_logs\logging.txt -Append
-            Get-NetTCPConnection -LocalPort $targetPort | Out-File -FilePath $env:HOMEPATH\Desktop\ps_logs\logging.txt -Append
+            Get-Process -Id (Get-NetTCPConnection -LocalPort $targetPort).OwningProcess | Out-File -FilePath $env:HOMEPATH\Desktop\ps_logs\logging.txt -Append
+            
+            if (Get-NetUDPEndpoint -LocalPort $targetPort -ErrorAction SilentlyContinue ) {
+                "$(Get-Date -format 'u') - Info - Capturing application that uses local port $targetPort" | Out-File -FilePath $env:HOMEPATH\Desktop\ps_logs\logging.txt -Append
+                Get-Process -Id (Get-NetUDPEndpoint -LocalPort $targetPort).OwningProcess | Out-File -FilePath $env:HOMEPATH\Desktop\ps_logs\logging.txt -Append
+            }
         }
         else {
             "$(Get-Date -format 'u') - Info - Local Port $targetPort is not in use." | Out-File -FilePath $env:HOMEPATH\Desktop\ps_logs\logging.txt -Append
